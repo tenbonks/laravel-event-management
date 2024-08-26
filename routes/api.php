@@ -12,7 +12,7 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('events', EventController::class);
 
 Route::apiResource('events.attendees', AttendeeController::class)
-    ->scoped();
+    ->scoped()->except(['update']);
 
 Route::fallback(function () {
     return response()->json(['message' => 'This endpoint was not found!'], 404);

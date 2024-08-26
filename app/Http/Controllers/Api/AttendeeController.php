@@ -46,12 +46,8 @@ class AttendeeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update has been removed from this controller due to it not being used.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

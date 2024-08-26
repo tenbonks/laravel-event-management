@@ -5,18 +5,45 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Http\Resources\EventResource;
+use App\Http\Traits\CanLoadRelationships;
 use App\Models\Event;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+
+    use CanLoadRelationships;
+
+    private array $relations = ['user', 'attendees', 'attendees.user'];
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return EventResource::collection(Event::with('user', 'attendees')->get());
+        $query = $this->loadRelationships(Event::query());
+
+        return EventResource::collection(
+            $query->latest()->paginate(10)
+        );
     }
+
+//    protected function shouldIncludeRelation(string $relation): bool
+//    {
+//        $include = request()->query('include');
+//
+//        if (!$include) {
+//            // Make include return false if it's null
+//            return false;
+//        }
+//
+//        // split and sanitize the include query
+//        $relations = array_map('trim' ,explode(',', $include));
+//
+//        // Return true if in array,
+//        return in_array($relation, $relations);
+//    }
+
 
     /**
      * Store a newly created resource in storage.<br>
@@ -26,16 +53,12 @@ class EventController extends Controller
     public function store(EventRequest $request)
     {
 
-        // I do have EventRequest setup, but the two uses of it here are different, and
-        // I am not sure how to use the Requests with two different set of rules
-
-
         $event = Event::create([
             ...$request->validated(),
             'user_id' => 1
         ]);
 
-        return new EventResource($event);
+        return new EventResource($this->loadRelationships($event));
     }
 
     /**
@@ -43,9 +66,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        // The EventResource has user and attendees set to be included in the JsonResponse when loaded
-        $event->load('user', 'attendees');
-        return new EventResource($event);
+        return new EventResource($this->loadRelationships($event));
     }
 
     /**
@@ -59,7 +80,7 @@ class EventController extends Controller
             $request->validated()
         );
 
-        return new EventResource($event);
+        return new EventResource($this->loadRelationships($event));
     }
 
     /**
