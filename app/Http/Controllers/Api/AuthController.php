@@ -24,24 +24,18 @@ class AuthController extends Controller
 
         // If no user, throw validation error
         if (!$user) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            throw $this->emailValidationException();
         }
 
         // If no the hashed request, and user password don't match, throw validation error
         if (!Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            throw $this->emailValidationException();
         }
 
         // At this point, we have authenticated the users credentials
-
         $token = $user->createToken('api-token')->plainTextToken;
 
         // At this point, we have generated a token for the user in the db
-
         return response()->json([
             'token' => $token,
         ]);
@@ -53,5 +47,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         //
+    }
+
+    private function emailValidationException(): ValidationException
+    {
+        return ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
+        ]);
     }
 }

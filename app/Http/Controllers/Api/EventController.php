@@ -28,34 +28,17 @@ class EventController extends Controller
         );
     }
 
-//    protected function shouldIncludeRelation(string $relation): bool
-//    {
-//        $include = request()->query('include');
-//
-//        if (!$include) {
-//            // Make include return false if it's null
-//            return false;
-//        }
-//
-//        // split and sanitize the include query
-//        $relations = array_map('trim' ,explode(',', $include));
-//
-//        // Return true if in array,
-//        return in_array($relation, $relations);
-//    }
-
 
     /**
      * Store a newly created resource in storage.<br>
      * Returns errors if fails validation<br>
      * Returns the newly created Event if passes validation
      */
-    public function store(EventRequest $request)
+    public function store(Request $request, EventRequest $eventRequest)
     {
-
         $event = Event::create([
-            ...$request->validated(),
-            'user_id' => 1
+            ...$eventRequest->validated(),
+            'user_id' => $request->user()->id,
         ]);
 
         return new EventResource($this->loadRelationships($event));
