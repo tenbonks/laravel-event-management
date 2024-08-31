@@ -8,7 +8,6 @@ use App\Http\Traits\CanLoadRelationships;
 use App\Models\Attendee;
 use App\Models\Event;
 use Illuminate\Http\Request;
-use App\Http\Resources\EventResource;
 
 class AttendeeController extends Controller
 {
@@ -42,7 +41,7 @@ class AttendeeController extends Controller
         // event_id is automatically set
         $attendee = $this->loadRelationships(
             $event->attendees()->create([
-                'user_id' => 1,
+                'user_id' => $request->user()->id,
             ])
         );
 
