@@ -8,13 +8,26 @@ use App\Http\Traits\CanLoadRelationships;
 use App\Models\Attendee;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class AttendeeController extends Controller
+class AttendeeController extends Controller implements HasMiddleware
 {
 
     use CanLoadRelationships;
 
     private array $relations = ['user'];
+
+
+    public static function middleware(): array
+    {
+
+        // All functions other than index and are protected with authentication
+
+        return [
+            new Middleware('auth:sanctum', except: ['index', 'show']),
+        ];
+    }
 
     /**
      * Display attendees for a given event, paginated
@@ -35,13 +48,13 @@ class AttendeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Event $event)
+    public function store(Event $event, Request $request)
     {
 
         // event_id is automatically set
         $attendee = $this->loadRelationships(
             $event->attendees()->create([
-                'user_id' => $request->user()->id,
+                'user_id' => 1,
             ])
         );
 

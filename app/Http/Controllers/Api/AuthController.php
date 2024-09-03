@@ -12,6 +12,7 @@ class AuthController extends Controller
 {
     /**
      * Log in a user.
+     * @throws ValidationException
      */
     public function login(Request $request)
     {
@@ -24,12 +25,12 @@ class AuthController extends Controller
 
         // If no user, throw validation error
         if (!$user) {
-            throw $this->emailValidationException();
+            throw $this->incorrectCredentialsException();
         }
 
         // If no the hashed request, and user password don't match, throw validation error
         if (!Hash::check($request->password, $user->password)) {
-            throw $this->emailValidationException();
+            throw $this->incorrectCredentialsException();
         }
 
         // At this point, we have authenticated the users credentials
@@ -49,7 +50,7 @@ class AuthController extends Controller
         //
     }
 
-    private function emailValidationException(): ValidationException
+    private function incorrectCredentialsException(): ValidationException
     {
         return ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.'],
