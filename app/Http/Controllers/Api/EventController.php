@@ -10,6 +10,7 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
 class EventController extends Controller implements HasMiddleware
 {
@@ -71,6 +72,18 @@ class EventController extends Controller implements HasMiddleware
      */
     public function update(EventRequest $request, Event $event)
     {
+
+    /**
+     * Below are two ways of using a defined Gate, they achieve the same thing.
+     * Gate::authorize is a simplified way of authorizing a method, it will return a 403 and a standard message.
+    */
+
+//        if (Gate::denies('update-event', $event)) {
+//            abort(403, 'You are not authorized to update this event.');
+//        }
+
+        Gate::authorize('update-event', $event);
+
         $event->update(
             $request->validated()
         );

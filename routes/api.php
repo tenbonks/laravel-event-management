@@ -16,6 +16,7 @@ Route::apiResource('events.attendees', AttendeeController::class)
     ->scoped()->except(['update']);
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::fallback(function () {
     return response()->json(['message' => 'This endpoint was not found!'], 404);

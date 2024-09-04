@@ -10,6 +10,8 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
+
 
 class AttendeeController extends Controller implements HasMiddleware
 {
@@ -18,14 +20,13 @@ class AttendeeController extends Controller implements HasMiddleware
 
     private array $relations = ['user'];
 
-
     public static function middleware(): array
     {
 
-        // All functions other than index and are protected with authentication
+        // Authorisation required on delete and store actions
 
         return [
-            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware('auth:sanctum', except: ['index', 'show', 'update']),
         ];
     }
 
@@ -80,6 +81,8 @@ class AttendeeController extends Controller implements HasMiddleware
      */
     public function destroy(Event $event, Attendee $attendee)
     {
+        Gate::authorize('delete-attendee', [$event, $attendee]);
+
         $attendee->delete();
 
         return response(status: 204);
