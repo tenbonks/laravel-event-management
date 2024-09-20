@@ -46,7 +46,7 @@ trait CanLoadRelationships
             return false;
         }
 
-        // split and sanitize the include query
+        // split and sanitize the include query (split string by comma and then remove all trailing spaces)
         $relations = array_map('trim' ,explode(',', $include));
 
         // Return true if in array,

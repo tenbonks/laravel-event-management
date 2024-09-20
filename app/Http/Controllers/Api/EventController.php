@@ -32,8 +32,11 @@ class EventController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        Gate::authorize('viewAny', Event::class);
+
         $query = $this->loadRelationships(Event::query());
 
         return EventResource::collection(
